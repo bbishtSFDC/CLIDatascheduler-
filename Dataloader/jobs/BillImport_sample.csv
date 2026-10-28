@@ -1,0 +1,4 @@
+HFA,SCS,FBA,VET,SPA,HBA,C1Type,C1Number,FFN,HFN,C2Type,HCA,C2Session,C3State,C3Number,State,Bill,HPA,Author,HCS,Link,ENG,C1State,ENR,SFA,SBA,Number,C2State,Last Action,SFN,C2Number,C3Type,C1Session,C3Session,FIL,Caption,SCA,Type,CCR,Session
+Y,Y,N,N,Y,N,HB,12345,1,1,SB,Y,89,TX,11111,TX,HB 12345,Y,Rep. John Smith,Y,https://capitol.texas.gov/bill1,Y,TX,Y,N,N,12345,CA,Passed Committee,4,67890,HB,88,87,N,Relating to public safety funding for Texas,Y,HB,Y,89
+N,N,Y,Y,N,Y,SB,67890,6.66667E+32,2,HB,N,90,CA,22222,CA,SB 67890,N,Sen. Mary Johnson,N,https://capitol.texas.gov/bill2,N,CA,N,Y,Y,67890,TX,Signed by Governor,5,12345,SB,89,88,Y,Relating to education reform and funding,N,SB,N,88
+Y,N,N,Y,N,N,HB,11111,3,3,SB,Y,87,FL,33333,FL,HB 11111,Y,Rep. David Brown,Y,https://capitol.texas.gov/bill3,N,FL,Y,N,Y,11111,FL,In Committee,6,54321,HB,90,89,N,Relating to environmental protection standards,Y,HB,Y,90
