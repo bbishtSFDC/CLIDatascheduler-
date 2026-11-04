@@ -63,3 +63,15 @@ Notes:
 Delete removes records, so test with extreme care. Deleted records normally go to the Recycle Bin. A hard delete is a separate permission and cannot be undone.
 
 1. **Salesforce:** give the integration user Delete access
+
+   ## Benefits
+
+- **Automates recurring CSV loads** into Salesforce, so nobody runs Data Loader by hand.
+- **No extra licences or middleware.** It uses Salesforce CLI, PowerShell and Windows Task Scheduler.
+- **Quick to set up.** Extract, authorize, configure the object and mappings, then schedule.
+- **Reusable.** Change the org alias, object and column mappings to load a different object or org.
+- **Auditable.** Every run keeps a log, row-level success and failure files, and the archived input.
+- **Secure by design.** It uses OAuth through Salesforce CLI. It does not use SOAP API login, and no passwords or tokens are stored in the scripts.
+- **Flexible.** Insert is supplied. See "Using a different operation" for upsert and delete.
+
+Not suited to real-time integrations, or to pipelines that need guaranteed delivery and automatic retries.
