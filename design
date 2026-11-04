@@ -106,3 +106,32 @@ C:\Dataloader\jobs\
 4. **Import.** Run `sf data import bulk --sobject $sfObject --file <mapped> --target-org $orgAlias --wait 10 --json` and save the JSON output. Record the CLI exit code. Delete the mapped file.
 5. **Find the job ID.** Parse the JSON and read `result.jobId`, `result.id` or `data.jobId`.
 6. **Fetch row results.** If a job ID exists, run `sf data bulk results --job-id <id> --target-org $orgAlias` from `C:\Dataloader\jobs`. The CLI writes `<jobId>-success-records.csv` and `<jobId>-failed-records.csv` there. The script renames them to `output\success_TS.csv
+
+## 7. Customer benefits
+
+### Business value
+- **Automates recurring loads.** A file that arrives on a schedule is loaded without someone running Data Loader by hand. This removes a repetitive manual task and the errors that come with it.
+- **No extra licences or middleware.** It uses Salesforce CLI, PowerShell and Windows Task Scheduler. These are free or already on the Windows host, so there is nothing to buy or host.
+- **Quick to start.** Extract the package, authorize the org, set the object and mappings, and schedule it. A first load can run the same day, and there is no development project.
+- **Reusable across objects and orgs.** The org alias, object and mappings are settings. The same package works for another object, or another org, without code changes.
+- **Auditable.** Every run writes a timestamped log, row-level success and failure files, and an archived copy of the input. Teams can reconcile what was loaded and prove it.
+- **Easier to correct.** The failure file lists each rejected row with its Salesforce error, so the customer can fix the data and reload only those rows.
+
+### Technical and security value
+- **Modern authentication.** It uses OAuth through `sf org login web`. It does not use SOAP API `login()`, which Salesforce is retiring, and it stores no passwords, security tokens or access tokens in scripts.
+- **Built on supported tooling.** Salesforce CLI and Bulk API 2.0 are current Salesforce tools, so the approach does not depend on the legacy Data Loader client.
+- **Least privilege.** A dedicated integration user needs only the object and field permissions the job uses (Create for insert, Edit for upsert, Delete for delete).
+- **Handles file-sized volumes.** Bulk API 2.0 processes records in batches on the Salesforce side, which suits loads that are too large to do through the UI.
+- **Simple to maintain.** There are four small files and one mapping CSV. Anyone who can read PowerShell can follow and adjust it.
+- **Flexible operation.** Insert is supplied, and the README documents the edits for upsert and delete.
+
+### Typical use cases
+- A nightly or weekly export from a legacy or on-premises system that must reach Salesforce.
+- Data migration waves that load the same file format repeatedly.
+- Proof-of-concept integrations where middleware is not yet justified.
+- Customers whose security teams want to move off SOAP username-and-password logins.
+
+### When another approach fits better
+- Near real-time or event-driven integration (use platform events, APIs or middleware).
+- Very large or business-critical pipelines that need retries, alerting and guaranteed delivery.
+- Sources that are not CSV files, or loads that touch several objects at once.
