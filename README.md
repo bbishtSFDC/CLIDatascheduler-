@@ -20,3 +20,46 @@ Start with the [Salesforce CSV Loader Setup Guide](Salesforce%20CSV%20Loader%20S
 - `Salesforce CSV Loader Setup Guide.docx`: distributable Word guide
 
 The implementation scripts have been retained unchanged. See the guide for configuration, installation, Task Scheduler setup, security, troubleshooting, and known limitations.
+
+## Using a different operation (insert, upsert, delete)
+
+The package as supplied does **insert**. To use it for another operation, change the places below. Everything else (folders, `MapHeaders.ps1`, Task Scheduler, result handling) stays the same.
+
+Run `sf data upsert bulk --help` or `sf data delete bulk --help` on your installed CLI first, because flags can differ between CLI versions. Test every change in a sandbox with a few synthetic records before scheduling it.
+
+| Operation | Use this as is? | What to change |
+|---|---|---|
+| **Insert** | Yes | Nothing beyond the normal configuration in the setup guide. |
+| **Upsert** | No | `run_insert.ps1` (2 edits), `ColumnMappings.csv`, and a Salesforce External ID field. |
+| **Delete** | No | `run_insert.ps1` (1 edit) and the input file layout. |
+
+### Upsert
+
+Upsert updates a record when the External ID matches, and inserts it when it doesn't.
+
+1. **Salesforce:** make sure the object has a field marked **External ID**. Give the integration user Edit access to the object and Edit field-level access to the fields being updated, not only Create.
+2. **`ColumnMappings.csv`:** add a mapping for your External ID column, for example `External Customer ID,External_Customer_ID__c`. Every row in the input file must have a value in that column.
+3. **`run_insert.ps1`, configuration block:** add the External ID field API name.
+   ```powershell
+   $externalIdField = "External_Customer_ID__c"
+   ```
+4. **`run_insert.ps1`, Step 2:** replace the import command.
+   ```powershell
+   # Insert (supplied)
+   & sf data import bulk --sobject $sfObject --file $mappedFile --target-org $orgAlias --wait 10 --json | Out-File $sfRawLog -Encoding utf8
+
+   # Upsert
+   & sf data upsert bulk --sobject $sfObject --file $mappedFile --external-id $externalIdField --target-org $orgAlias --wait 10 --json | Out-File $sfRawLog -Encoding utf8
+   ```
+5. **Optional:** copy the files to `run_upsert.ps1` and `run_upsert.bat`, and point the `.bat` file and the Task Scheduler action at the new names, so operators can tell the jobs apart.
+
+Notes:
+- Empty cells do not normally clear existing values in a bulk upsert. Test this in a sandbox if you need blanks to overwrite.
+- Two rows with the same External ID in one file can cause errors or an unexpected final value. De-duplicate the source.
+- Re-running the same file is much safer than with insert, because it should not create duplicates.
+
+### Delete
+
+Delete removes records, so test with extreme care. Deleted records normally go to the Recycle Bin. A hard delete is a separate permission and cannot be undone.
+
+1. **Salesforce:** give the integration user Delete access
